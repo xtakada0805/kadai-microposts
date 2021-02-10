@@ -24,8 +24,15 @@ class UsersController extends Controller
     {
         $user = User::findOrFail($id);
         
+        // モデルの件数をロード
+        $user->loadRelationshipCounts();
+        
+        // ユーザーの投稿一覧を作成日時の降順で取得
+        $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
+        
         return view('users.show',[
-            'user' => $user,    
+            'user' => $user,
+            'microposts' => $microposts,
         ]);
     }
 }
