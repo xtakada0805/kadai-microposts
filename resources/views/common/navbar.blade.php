@@ -15,6 +15,8 @@
                         <ul class="dropdown-menu dropdown-menu-right">
                             <li class="dropdown-item">{!! link_to_route('users.show', 'My profile', ['user' => Auth::id()]) !!}</li>
                             <li class="dropdown-driver"></li>
+                            <li class="dropdown-item">{!! link_to_route('users.favorites', 'Favorite', ['id' => Auth::id()]) !!}</li>
+                            <li class="dropdown-driver"></li>
                             <li class="dropdown-item">{!! link_to_route('logout.get', 'Logout') !!}</li>
                         </ul>
                     </li>

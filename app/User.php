@@ -54,10 +54,16 @@ class User extends Authenticatable
         return $this->belongsToMany(User::class, 'user_follow', 'follow_id', 'user_id')->withTimestamps();
     }
     
+    //お気に入り
+    public function favorites()
+    {
+        return $this->belongsToMany(Micropost::class, 'favorite', 'user_id', 'microposts_id')->withTimestamps();
+    }
+    
     // モデルの件数をカウント
     public function loadRelationshipCounts()
     {
-        $this->loadCount(['microposts', 'followings', 'followers']);
+        $this->loadCount(['microposts', 'followings', 'followers', 'favorites']);
     }
     
     //フォローする 成功したらtrue返す
@@ -76,6 +82,32 @@ class User extends Authenticatable
             //未フォローであればフォローする
             $this->followings()->attach($userId);
             return true;
+        }
+    }
+    
+    public function favorite($microposts_id)
+    {
+        $exist = $this->is_favorite($microposts_id);
+        
+        if($exist){
+            $this->favorites()->detach($microposts_id);
+            return true;
+        }else{
+            $this->favorites()->attach($microposts_id);
+            return false;
+        }
+    }
+    
+    public function unfavorite($microposts_id)
+    {
+        $exist = $this->is_favorite($microposts_id);
+        
+        if($exist){
+            $this->favorites()->detach($microposts_id);
+            return true;
+        }else{
+            $this->favorites()->attach($microposts_id);
+            return false;
         }
     }
     
@@ -104,6 +136,13 @@ class User extends Authenticatable
     {
         //フォロー中にuserIdが存在するか
         return $this->followings()->where('follow_id', $userId)->exists();
+    }
+    
+    //お気に入り中かどうかを調べる。お気に入り中ならtrueを返す
+    public function is_favorite($microposts_id)
+    {
+        //お気に入り中にuserIdが存在するか
+        return $this->favorites()->where('microposts_id', $microposts_id)->exists();
     }
     
     //フォロー中ユーザの投稿に絞り込む
